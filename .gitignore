@@ -1,0 +1,30 @@
+# Generated files
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+*.jar
+*.keystore
+*.jks
+/build
+/app/build
+/release
+/output
+
+# Local configuration files
+local.properties
+/.idea/workspace.xml
+/.idea/gradle.xml
+
+# IDE files
+*.iml
+.idea/
+.gradle/
+.cxx/
+.externalNativeBuild/
+captures/
+.DS_Store
+
+# Log files
+*.log
