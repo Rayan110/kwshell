@@ -1,0 +1,50 @@
+name: Build kwshell
+
+# تعیین زمان اجرای اکشن (هنگام پوش روی شاخه اصلی یا ایجاد Pull Request)
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch: # اجازه اجرای دستی اکشن را می‌دهد
+
+jobs:
+  build:
+    name: Build and Package
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        # ساخت برای سیستم‌عامل‌های مختلف (ویندوز، لینوکس، مک)
+        os: [linux, windows, darwin]
+        arch: [amd64, arm64]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21' # یا نسخه‌ای که در go.mod ذکر شده
+          cache: true
+
+      - name: Install Dependencies
+        run: go mod download
+
+      - name: Build Binary
+        run: |
+          BINARY_NAME=kwshell
+          # اضافه کردن پسوند .exe برای ویندوز
+          if [ "${{ matrix.os }}" = "windows" ]; then
+            BINARY_NAME="${BINARY_NAME}.exe"
+          fi
+          
+          echo "Building for ${{ matrix.os }}/${{ matrix.arch }}..."
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -v -o "dist/${BINARY_NAME}-${{ matrix.os }}-${{ matrix.arch }}" .
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kwshell-${{ matrix.os }}-${{ matrix.arch }}
+          path: dist/*
